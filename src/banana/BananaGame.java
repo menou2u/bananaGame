@@ -1,9 +1,12 @@
+package banana;
 import view.Screen;
 
 public class BananaGame {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+		@SuppressWarnings("unused")
 		Screen screen = new Screen();
+		//
 	}
 
 }
