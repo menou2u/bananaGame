@@ -25,12 +25,12 @@ public class Screen extends JFrame implements Observer{
 	private JFormattedTextField answerZone;
 	private ValidateButton validate;
 	private WordChecking wordChecking;
-	private String previousWord = "apple";
 
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("static-access")
 	public Screen(){
+		wordChecking = new WordChecking();
 	
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Banana Game");
@@ -41,7 +41,7 @@ public class Screen extends JFrame implements Observer{
 		gbc.gridy = 0;
 		
 		words = new JLabel();
-		words.setText(previousWord);
+		words.setText(wordChecking.getPreviousWord());
 		words.setFont(new Font("Serif", Font.PLAIN, 40));
 		
 		gbc.gridx += gbc.gridwidth;
@@ -73,11 +73,9 @@ public class Screen extends JFrame implements Observer{
 		gbc.gridx += gbc.gridwidth;
 		add(validate.getButton(),gbc);
 	
-		wordChecking = new WordChecking();
 		setPreferredSize(new Dimension(700,700));
 		setVisible(true);
 		pack();
-		//
 	}
 
 	@Override
@@ -87,10 +85,9 @@ public class Screen extends JFrame implements Observer{
 			if (wordChecking.isWordActual(text)){
 				if (!wordChecking.isAlreadyFound()){
 					if (wordChecking.existsInDictionnary()){
-						previousWord = words.getText();
-						wordChecking.setPreviousWord(previousWord);
-						words.setText(text);
+						words.setText(words.getText()+answerZone.getText());
 						answerZone.setValue("");
+						definitions.append(wordChecking.getDefinition()+"\n");
 					}
 					else {
 						definitions.append("Unknown word !\n");
