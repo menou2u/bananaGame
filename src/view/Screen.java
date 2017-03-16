@@ -1,11 +1,11 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -21,22 +21,22 @@ import model.ValidateButton;
 
 public class Screen extends JFrame implements Observer{
 
-	private JLabel words;
-	private ArrayList<String> threeLastWords;
+	private String[] words = new String[4];
+	private JLabel word1, word2, word3, word4;
 	private JTextArea definitions;
 	private JFormattedTextField answerZone;
 	private ValidateButton validate;
 	private WordChecking wordChecking;
+	private boolean correctAnswer;
+	private int numberOfLives;
 
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("static-access")
 	public Screen(){
+		numberOfLives = 3;
 		wordChecking = new WordChecking();
-		threeLastWords = new ArrayList<String>();
-		threeLastWords.add("");
-		threeLastWords.add("");
-		threeLastWords.add("");
+		wordChecking.randomStart();
 	
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Banana Game");
@@ -46,20 +46,45 @@ public class Screen extends JFrame implements Observer{
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		
-		words = new JLabel();
-		words.setText(wordChecking.getPreviousWord());
-		words.setFont(new Font("Serif", Font.PLAIN, 40));
+		word1 = new JLabel();
+		word1.setFont(new Font("Serif", Font.PLAIN, 40));
+		
+		gbc.gridwidth = 1;
+		gbc.insets = new Insets(0, 1, 25, 1);
+		add(word1,gbc);
+		
+		word2 = new JLabel();
+		word2.setFont(new Font("Serif", Font.PLAIN, 40));
 		
 		gbc.gridx += gbc.gridwidth;
-		gbc.gridwidth = 2;
+		gbc.gridwidth = 1;
 		gbc.insets = new Insets(0, 1, 25, 1);
-		add(words,gbc);
+		add(word2,gbc);
+		
+		word3 = new JLabel();
+		word3.setFont(new Font("Serif", Font.PLAIN, 40));
+		
+		gbc.gridx += gbc.gridwidth;
+		gbc.gridwidth = 1;
+		gbc.insets = new Insets(0, 1, 25, 1);
+		add(word3,gbc);
+		
+		word4 = new JLabel();
+		word4.setText(wordChecking.getPreviousWord());
+		word4.setFont(new Font("Serif", Font.PLAIN, 40));
+		words[3] = word4.getText();
+		
+		gbc.gridx += gbc.gridwidth;
+		gbc.gridwidth = 1;
+		gbc.insets = new Insets(0, 1, 25, 1);
+		add(word4,gbc);
 		
 		definitions = new JTextArea(15,25);
 		definitions.setEditable(false);
 		gbc.insets = new Insets(0, 0, 0, 5);
 		gbc.gridy += gbc.gridheight;
 		gbc.gridx = 0;
+		gbc.gridwidth = 2;
 		gbc.gridheight = 3;
 		add(definitions,gbc);		
 		
@@ -89,44 +114,49 @@ public class Screen extends JFrame implements Observer{
 		if (o instanceof ValidateButton){
 			String text = answerZone.getText();
 			if (wordChecking.isWordActual(text)){
-				if (wordChecking.existsInDictionnary()){
-					//reArrange(answerZone.getText());
-					words.setText(words.getText()+wordChecking.getPreviousWord());
-					definitions.append(wordChecking.getDefinition()+"\n");
-					answerZone.setValue("");
+				if (!wordChecking.isAlreadyFound()){
+					if (wordChecking.existsInDictionnary()){
+						changeWordsDisplay(wordChecking.getPreviousWord());
+						definitions.append(wordChecking.getDefinition()+"\n");
+						answerZone.setValue("");
+						correctAnswer = true;
+					}
+					else {
+						definitions.append("The word "+text+" is unknown!\n");
+						correctAnswer = false;
+					}
 				}
 				else {
-					definitions.append("Unknown word!\n");
+					definitions.append("The word "+text+" has already been found!\n");
+					correctAnswer = false;
 				}
 			}
 			else {
 				definitions.append("You proposition is not valid!\n");
+				correctAnswer = false;
 			}
-			if (wordChecking.iAPlays()){ //si l'IA trouve quelque chose
-				words.setText(words.getText()+wordChecking.joiningWords(words.getText()));
-				definitions.append(wordChecking.getDefinition()+"\n");
+			if (correctAnswer) {
+				if (wordChecking.iAPlays()){ //si l'IA trouve quelque chose
+					changeWordsDisplay(wordChecking.getPreviousWord());
+					definitions.append(wordChecking.getDefinition()+"\n");
+				}
+				else {
+					definitions.append("You've won against the computer, congratulations!\n");
+				}
 			}
 			else {
-				definitions.append("You've won against the computer, congratulations!\n");
+				numberOfLives--;
+				if (numberOfLives == 0){
+					definitions.append("You've lost of your lives !\n");
+				}
 			}
 		}
 	}
-
-	/*private void reArrange(String newText) {
-		if (threeLastWords.size() < 3){
-			for (String s : threeLastWords){
-				if (s.equals("")){
-					s = newText;
-				}
-				break;
-			}
-		}
-		else {
-			for (int i=0;i<threeLastWords.size()-1;i++){
-				threeLastWords.set(i, threeLastWords.get(i+1));
-			}
-			threeLastWords.set(2, newText);
-		}
-		System.out.println("3 : "+threeLastWords);
-	}*/
+	
+	public void changeWordsDisplay(String s){
+		word1.setText(word2.getText());
+		word2.setText(word3.getText());
+		word3.setText(word4.getText());
+		word4.setText(s);
+	}
 }
