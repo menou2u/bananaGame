@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.SynchronousQueue;
 
 public class WordChecking {
 
@@ -19,6 +19,10 @@ public class WordChecking {
 		alreadyFoundWords = new ArrayList<String>();
 		filename = "dic.txt";
 		previousWord = "";
+	}
+	
+	public boolean isAlreadyFound(){
+		return alreadyFoundWords.contains(word);
 	}
 	
 	public boolean iAPlays(){
@@ -78,6 +82,7 @@ public class WordChecking {
 	}
 	
 	public String joiningWords(String oldText){
+		System.out.println("Début j");
 		int limit = Math.min(oldText.length(),previousWord.length());
 		String substringOld = "";
 		String substringPreviousWord = "";
@@ -90,6 +95,7 @@ public class WordChecking {
 			System.out.println("sspw : "+substringPreviousWord);
 			if (substringOld.equals(substringPreviousWord)){
 				System.out.println("res : "+previousWord.substring(i+1));
+				System.out.println("Fin J");
 				return previousWord.substring(i+1);
 			}
 		}
@@ -99,15 +105,9 @@ public class WordChecking {
 	@SuppressWarnings("resource")
 	public boolean existsInDictionnary() {
 		int i = 1;
-		String wholeWord = previousWord + word;
+		String wholeWord = previousWord + joiningWords(word);
 		System.out.println("whole : " + wholeWord);
-		String wordTested = "";
-		if (previousWord.length() > 0) { //pour le début du jeu (car on n'aura pas de previousWord)
-			wordTested = previousWord.substring(previousWord.length()-i) + word;
-		}
-		else { //pour tout le reste du jeu
-			wordTested = word;
-		}
+		String wordTested = word;
 		System.out.println("tested : " + wordTested);
 		while (!wordTested.equals(wholeWord) || previousWord.equals("")){
 			FileReader flot;
@@ -145,11 +145,40 @@ public class WordChecking {
 				return false;
 			}
 			i++;
-			System.out.println("i : "+i);
-			wordTested = previousWord.substring(previousWord.length()-i) + word;
-			System.out.println("next tested word : "+wordTested);
+			if (i > previousWord.length()){
+				System.out.println("i : "+i);
+				wordTested = previousWord.substring(previousWord.length()-i) + word;
+				System.out.println("next tested word : "+wordTested);
+			}
+			else {
+				return false;
+			}
 		}
 		return false;
+	}
+	
+	public void randomStart(){
+		Random r = new Random();
+		int i = 0;
+		int q = r.nextInt(30);
+		FileReader flot;
+		BufferedReader flotFiltre;
+		String ligne = null;
+		Scanner filtre = null;
+	
+		try {
+			flot = new FileReader(filename);
+			flotFiltre = new BufferedReader(flot);
+			while (i < q){
+				ligne = flotFiltre.readLine();
+				i++;
+			}
+			filtre = new Scanner(ligne).useDelimiter(",");
+			previousWord = filtre.next();
+			alreadyFoundWords.add(previousWord);
+			flotFiltre.close();
+					
+		} catch (IOException e) {System.out.println(e.getMessage());}
 	}
 	
 	public void wordFound(){
