@@ -23,7 +23,7 @@ public class Dictionnary {
 	public Dictionnary()
 	{
 		header = "";
-		filePath = "C:\\Users\\Miron\\Desktop\\EnglishWords.txt";
+		filePath = "EnglishWords.txt";
 		path = Paths.get(filePath);
 		list = new File(filePath);
 	}
@@ -40,7 +40,12 @@ public class Dictionnary {
 		{
 			line = inFile.nextLine();
 			noLine+=1;
-			word = inLine.next();
+			if (inLine.hasNext())
+			{
+				word = inLine.next();
+			}
+			else
+				break;
 			word.replaceAll(" ","");
 			if (this.getHeader().length() == word.length() && this.getHeader().equals(word))
 			{
@@ -76,7 +81,7 @@ public class Dictionnary {
 		String def = null;
 		while (def==null)
 		{
-			if (scan.next().contains("definition"))
+			if (scan.hasNext() && scan.next().contains("definition"))
 			{
 				scan.next();
 				def = scan.next();
