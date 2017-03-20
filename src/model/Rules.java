@@ -18,7 +18,7 @@ public class Rules extends Observable {
 	private Button back;
 	
 	public Rules(){
-		rules = new JTextArea("Hello, welcome to the BananaGame !\nHere are the few rules you need to know :\nA word will be given randomly at start and will become the main word.\nYou need to write a word that starts with a part of the main word. A part, not the whole word.\nIf your word actually exists and has never been used in this game, it will be accepted and the other player(s)\n will have to do so with your word becoming the main word, and so on.\nThe latest words are visible and you can click on them to get their definition.");
+		rules = new JTextArea("Hello, welcome to the BananaGame !\nHere are the few rules you need to know :\nA word will be given randomly at start and will become the main word.\nYou need to write a word that starts with a part of the main word. A part, not the whole word.\nIf your word actually exists, is at least 2 letters long and has never been used in this game, it will be accepted and the other player(s)\n will have to do so with your word becoming the main word, and so on.\nThe latest words are visible and you can click on them to get their definition.");
 		rules.setEditable(false);
 		rules.setPreferredSize(new Dimension(590,150));
 		
