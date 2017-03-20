@@ -79,9 +79,9 @@ public class Dictionnary {
 		Scanner scan = new Scanner(getLine());
 		scan.useDelimiter("\"");
 		String def = null;
-		while (def==null)
+		while (def==null && scan.hasNext())
 		{
-			if (scan.hasNext() && scan.next().contains("definition"))
+			if (scan.next().contains("definition"))
 			{
 				scan.next();
 				def = scan.next();

@@ -55,124 +55,12 @@ public class XmlCreator {
 	     */
 	    //final Comment commentaire = document.createComment("John DOE");
 	    //racine.appendChild(commentaire);
-			
-	     
 	    
-	    final Element enteteA = document.createElement("Entête");
-	    enteteA.setAttribute("lettre", "A");
-	    racine.appendChild(enteteA);
-	    
-	    final Element enteteB = document.createElement("Entête");
-	    enteteB.setAttribute("lettre", "B");
-	    racine.appendChild(enteteB);
-	    
-	    final Element enteteC = document.createElement("Entête");
-	    enteteC.setAttribute("lettre", "C");
-	    racine.appendChild(enteteC);
-	    
-	    final Element enteteD = document.createElement("Entête");
-	    enteteD.setAttribute("lettre", "D");
-	    racine.appendChild(enteteD);
-	    
-	    final Element enteteE = document.createElement("Entête");
-	    enteteE.setAttribute("lettre", "E");
-	    racine.appendChild(enteteE);
-	    
-	    final Element enteteF = document.createElement("Entête");
-	    enteteF.setAttribute("lettre", "F");
-	    racine.appendChild(enteteF);
-	    
-	    final Element enteteG = document.createElement("Entête");
-	    enteteG.setAttribute("lettre", "G");
-	    racine.appendChild(enteteG);
-	    
-	    final Element enteteH = document.createElement("Entête");
-	    enteteH.setAttribute("lettre", "H");
-	    racine.appendChild(enteteH);
-	    
-	    final Element enteteI = document.createElement("Entête");
-	    enteteI.setAttribute("lettre", "I");
-	    racine.appendChild(enteteI);
-	    
-	    final Element enteteJ = document.createElement("Entête");
-	    enteteJ.setAttribute("lettre", "J");
-	    racine.appendChild(enteteJ);
-	    
-	    final Element enteteK = document.createElement("Entête");
-	    enteteK.setAttribute("lettre", "K");
-	    racine.appendChild(enteteK);
-	    
-	    final Element enteteL = document.createElement("Entête");
-	    enteteL.setAttribute("lettre", "L");
-	    racine.appendChild(enteteL);
-	    
-	    final Element enteteM = document.createElement("Entête");
-	    enteteM.setAttribute("lettre", "M");
-	    racine.appendChild(enteteM);
-	    
-	    final Element enteteN = document.createElement("Entête");
-	    enteteN.setAttribute("lettre", "N");
-	    racine.appendChild(enteteN);
-	    
-	    final Element enteteO = document.createElement("Entête");
-	    enteteO.setAttribute("lettre", "O");
-	    racine.appendChild(enteteO);
-	    
-	    final Element enteteP = document.createElement("Entête");
-	    enteteP.setAttribute("lettre", "P");
-	    racine.appendChild(enteteP);
-	    
-	    final Element enteteQ = document.createElement("Entête");
-	    enteteQ.setAttribute("lettre", "Q");
-	    racine.appendChild(enteteQ);
-	    
-	    final Element enteteR = document.createElement("Entête");
-	    enteteR.setAttribute("lettre", "R");
-	    racine.appendChild(enteteR);
-	    
-	    final Element enteteS = document.createElement("Entête");
-	    enteteS.setAttribute("lettre", "S");
-	    racine.appendChild(enteteS);
-	    
-	    final Element enteteT = document.createElement("Entête");
-	    enteteT.setAttribute("lettre", "T");
-	    racine.appendChild(enteteT);
-	    
-	    final Element enteteU = document.createElement("Entête");
-	    enteteU.setAttribute("lettre", "U");
-	    racine.appendChild(enteteU);
-	    
-	    final Element enteteV = document.createElement("Entête");
-	    enteteV.setAttribute("lettre", "V");
-	    racine.appendChild(enteteV);
-	    
-	    final Element enteteW = document.createElement("Entête");
-	    enteteW.setAttribute("lettre", "W");
-	    racine.appendChild(enteteW);
-	    
-	    final Element enteteX = document.createElement("Entête");
-	    enteteX.setAttribute("lettre", "X");
-	    racine.appendChild(enteteX);
-	    
-	    final Element enteteY = document.createElement("Entête");
-	    enteteY.setAttribute("lettre", "Y");
-	    racine.appendChild(enteteY);
-	    
-	    final Element enteteZ = document.createElement("Entête");
-	    enteteZ.setAttribute("lettre", "Z");
-	    racine.appendChild(enteteZ);
-	    
-	    Element alphabetElem[] = {enteteA,enteteB,enteteC,enteteD,enteteE,enteteF,enteteG,enteteH,enteteI,enteteJ,enteteK,enteteL,enteteM,enteteN,enteteO,enteteP,enteteQ,enteteR,enteteS,enteteT,enteteU,enteteV,enteteW,enteteX,enteteY,enteteZ};
-	    
-	    Element mot = document.createElement("Mot");
-	    Element tempElem;
-	    //Node motTemp = mracine.getFirstChild().appendChild(mot);
 	    Scanner in = new Scanner(new File("EnglishWords.txt"));
 	    String temp = "";
 	    String def = "";
-	    
-	    NodeList list = racine.getChildNodes();
-	    while(in.hasNextLine())
+	    String tempUp="";
+	    /*while(in.hasNextLine())
 	    {
 	    	temp = in.nextLine();
 	    	if (temp.length()>1)
@@ -196,8 +84,33 @@ public class XmlCreator {
 	    			}
 	    		}
 	    	}
+	    }*/
+	    int i=0;
+	    int j=0;
+	    while(in.hasNextLine())
+	    {
+	    	temp = in.nextLine();
+	    	tempUp = temp.toUpperCase();
+    		dico = new Dictionnary();
+    		Element elem = document.createElement(temp); 
+    		dico.setHeader(temp);
+    		try {
+	    		def = dico.extractDefinition();
+			} catch (DOMException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		if (def!=null)
+    		{
+    	    elem.setTextContent(def);
+    	    Node node= racine.appendChild(elem);
+    	    i++;
+    	    System.out.println("Defined words = "+i);
+    		}
+    		j++;
+    		System.out.println("Treated words = "+j);
 	    }
-	    
+	    in.close();
 	    /*
 	     * Etape 6 : création du nom et du prénom
 	     */
