@@ -24,8 +24,8 @@ public class OpeningMenuDisplay extends JPanel{
 		gbc.gridy += gbc.gridheight;
 		add(m.getRules(),gbc);
 		
-		gbc.gridy += gbc.gridheight;
-		add(m.getHighScores(),gbc);
+		/*gbc.gridy += gbc.gridheight;
+		add(m.getHighScores(),gbc);*/
 	}
 	
 }

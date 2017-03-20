@@ -13,6 +13,9 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -22,7 +25,9 @@ import javax.swing.JTextArea;
 import calc.Dictionnary;
 import calc.WordChecking;
 import listener.AnswerZoneListener;
+import listener.BackListener;
 import listener.ValidateListener;
+import model.Button;
 import model.ValidateButton;
 
 public class Screen extends JPanel implements Observer, ActionListener {
@@ -38,22 +43,22 @@ public class Screen extends JPanel implements Observer, ActionListener {
 	private Dictionnary dic;
 	private int numberOfPlayers;
 	private int turn;
-	private int score;
-	private JLabel scoreDisplay;
-	private JLabel lives;
 
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("static-access")
 	public Screen(int nbPlayers) {
-		numberOfPlayers = nbPlayers;
-		numberOfLives = new int[numberOfPlayers];
 		
+		numberOfPlayers = nbPlayers;
 		if (numberOfPlayers == 2){
+			numberOfLives = new int[numberOfPlayers];
 			numberOfLives[1] = 3;
 			Random r = new Random();
 			int q = r.nextInt(1);
 			turn = 1 + q;
+		}
+		else {
+			numberOfLives = new int[numberOfPlayers];
 		}
 		numberOfLives[0] = 3;
 		wordChecking = new WordChecking();
@@ -120,12 +125,17 @@ public class Screen extends JPanel implements Observer, ActionListener {
 		
 		definitions = new JTextArea(15,25);
 		definitions.setEditable(false);
-		definitions.append("Player "+turn+", you start!\n");
+		if (numberOfPlayers == 2){
+			definitions.append("Player "+turn+", you start!\n");
+		}
+		else {
+			definitions.append("The computer played "+wordChecking.getPreviousWord()+", it's your turn now!\n");
+		}
 		gbc.insets = new Insets(0, 0, 0, 5);
 		gbc.gridy += gbc.gridheight;
 		gbc.gridx = 0;
 		gbc.gridwidth = 2;
-		gbc.gridheight = 3;
+		gbc.gridheight = 4;
 		add(definitions,gbc);		
 		
 		answerZone = new JFormattedTextField();
@@ -143,24 +153,6 @@ public class Screen extends JPanel implements Observer, ActionListener {
 		validate.getButton().addActionListener(new ValidateListener(validate));
 		gbc.gridx += gbc.gridwidth;
 		add(validate.getButton(),gbc);
-		
-		lives = new JLabel();
-		lives.setText("Player 1 lives : "+numberOfLives[0]);
-		if (numberOfPlayers == 2){
-			lives.setText(lives.getText()+" -- Player 2 lives : "+numberOfLives[1]);
-		}
-		gbc.gridx -= gbc.gridwidth;
-		gbc.gridy += gbc.gridheight;
-		add(lives,gbc);
-		
-		if (numberOfPlayers == 1){
-			score = 0;
-			scoreDisplay = new JLabel();
-			scoreDisplay.setText("Score : "+score);
-			gbc.gridx -= gbc.gridwidth;
-			gbc.gridy += gbc.gridheight;
-			add(lives,gbc);
-		}
 	
 		setPreferredSize(new Dimension(800,700));
 		setVisible(true);
@@ -203,6 +195,7 @@ public class Screen extends JPanel implements Observer, ActionListener {
 					dic.setHeader(wordChecking.getPreviousWord());
 					try {
 						definitions.append("The computer played : "+wordChecking.getPreviousWord()+" : "+dic.extractDefinition()+"\n");
+						definitions.append("Your turn now\n");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -223,7 +216,7 @@ public class Screen extends JPanel implements Observer, ActionListener {
 			if (wordChecking.isWordActual(text)){
 				if (!wordChecking.isAlreadyFound()){
 					if (wordChecking.existsInDictionnary()){
-						changeWordsDisplay(wordChecking.getPreviousWord(), Color.BLUE);
+						changeWordsDisplay(wordChecking.getPreviousWord(), turn);
 						dic.setHeader(wordChecking.getPreviousWord());
 						try {
 							definitions.append("You played "+wordChecking.getPreviousWord()+" : "+dic.extractDefinition()+"\n");
@@ -237,6 +230,7 @@ public class Screen extends JPanel implements Observer, ActionListener {
 						definitions.append("The word "+text+" is unknown!\n");
 						correctAnswer = false;
 						numberOfLives[turn - 1]--;
+						definitions.append("Remaining lives :"+numberOfLives[turn - 1]+"\n");
 						
 					}
 				}
@@ -244,15 +238,17 @@ public class Screen extends JPanel implements Observer, ActionListener {
 					definitions.append("The word "+text+" has already been found!\n");
 					correctAnswer = false;
 					numberOfLives[turn - 1]--;
+					definitions.append("Remaining lives :"+numberOfLives[turn - 1]+"\n");
 				}
 			}
 			else {
 				definitions.append("You proposition is not valid!\n");
 				correctAnswer = false;
 				numberOfLives[turn - 1]--;
+				definitions.append("Remaining lives :"+numberOfLives[turn - 1]+"\n");
 			}
 		}
-		if (correctAnswer){
+		if (correctAnswer && numberOfPlayers == 2){
 			if (turn==1){
 				turn = 2;
 			}
@@ -266,6 +262,25 @@ public class Screen extends JPanel implements Observer, ActionListener {
 		}
 	}
 	
+	private void changeWordsDisplay(String previousWord, int turn2) {
+		if (turn2 == 2){
+			word2.setForeground(Color.RED);
+			word4.setForeground(Color.RED);
+			word1.setForeground(Color.BLUE);
+			word3.setForeground(Color.BLUE);
+		}
+		else {
+			word1.setForeground(Color.RED);
+			word3.setForeground(Color.RED);
+			word2.setForeground(Color.BLUE);
+			word4.setForeground(Color.BLUE);
+		}
+		word1.setText(word2.getText());
+		word2.setText(word3.getText());
+		word3.setText(word4.getText());
+		word4.setText(previousWord);
+	}
+
 	public void changeWordsDisplay(String s, Color c){
 		if (c.equals(Color.RED)){
 			word2.setForeground(c);

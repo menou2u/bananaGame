@@ -96,11 +96,6 @@ public class MenuScreen extends JFrame implements Observer{
 				card.show(content,listContent[3]);
 			}
 		}
-		if (obs instanceof HighScores){
-			if (((Button) arg).getButtonName().equals("Back")){
-				card.show(content,listContent[3]);
-			}
-		}
 	}
 	
 }
