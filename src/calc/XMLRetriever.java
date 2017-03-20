@@ -15,12 +15,8 @@ import org.xml.sax.SAXException;
 
 public class XMLRetriever {
 
-	public static void main(final String[] args) {
-		/*
-		 * Etape 1 : récupération d'une instance de la classe
-		 * "DocumentBuilderFactory"
-		 */
-
+	public static void main(String[] args) {
+		retrieve("aba");
 	}
 
 	public static String retrieve(String temp) {
@@ -36,7 +32,7 @@ public class XMLRetriever {
 			/*
 			 * Etape 3 : création d'un Document
 			 */
-			final Document document = builder.parse(new File("repertoire.xml"));
+			final Document document = builder.parse(new File("test.xml"));
 
 			// Affiche du prologue
 			/*
@@ -68,8 +64,8 @@ public class XMLRetriever {
 
 			// TODO : du coup changer la boucle
 			for (int i = 0; i < nbRacineNoeuds; i++) {
-				if (racineNoeuds.item(i).getNodeName() == temp) {
-					definition = racineNoeuds.item(i).getNodeValue();
+				if (racineNoeuds.item(i).getNodeName().contains(temp)) {
+					definition = racineNoeuds.item(i).getTextContent();
 
 					// Affichage d'une personne
 					/*
@@ -85,6 +81,8 @@ public class XMLRetriever {
 
 					// Affichage du nom et du prénom
 					System.out.println(temp + " : " + definition);
+					return definition;
+
 
 					/*
 					 * Etape 7 : récupération des numéros de téléphone
@@ -114,4 +112,7 @@ public class XMLRetriever {
 		}
 		return definition;
 	}
+	
+
+	
 }
