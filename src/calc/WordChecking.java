@@ -47,7 +47,7 @@ public class WordChecking {
 					if (filtre.hasNext()) {
 						String mot = filtre.next();
 						//System.out.println("mot : "+mot);
-						if (mot.startsWith(beginningOfTheWord) && !alreadyFoundWords.contains(mot)) {  //on a trouvé une correspondance
+						if (mot.startsWith(beginningOfTheWord) && !alreadyFoundWords.contains(mot) && mot.length()>2) {  //on a trouvé une correspondance
 							//System.out.println("OIN");
 							previousWord = mot;
 							alreadyFoundWords.add(previousWord);
@@ -69,7 +69,7 @@ public class WordChecking {
 	}
 	
 	public boolean isWordActual(String w){
-		if (!w.equals(null) && !w.equals("") && w.length() != 0 && !w.matches(".*\\d+.*") && !joiningWords(w).equals("")) {
+		if (!w.equals(null) && !w.equals("") && w.length()>2 && !w.matches(".*\\d+.*") && !joiningWords(w).equals("")) {
 			word = w;
 			return true;
 		}
