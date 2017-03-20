@@ -12,12 +12,11 @@ public class WordChecking {
 	private String word;         //the word entered, to be checked
 	private String previousWord; //the previous word
 	private String filename;
-	private String definition;
 	private ArrayList<String> alreadyFoundWords;
 	
 	public WordChecking() {
 		alreadyFoundWords = new ArrayList<String>();
-		filename = "dic.txt";
+		filename = "EnglishWords.txt";
 		previousWord = "";
 	}
 	
@@ -28,9 +27,9 @@ public class WordChecking {
 	public boolean iAPlays(){
 		int i = 1;
 		String wholeWord = previousWord; //on ne va pas chercher au delà
-		System.out.println("Le joueur a joué ce mot : "+wholeWord);
+		//System.out.println("Le joueur a joué ce mot : "+wholeWord);
 		String beginningOfTheWord = previousWord.substring(previousWord.length()-i);
-		System.out.println("Je vais chercher un mot qui commence par : "+beginningOfTheWord);
+		//System.out.println("Je vais chercher un mot qui commence par : "+beginningOfTheWord);
 		
 		while (!beginningOfTheWord.equals(wholeWord)){
 			FileReader flot;
@@ -42,37 +41,35 @@ public class WordChecking {
 				flot = new FileReader(filename);
 				flotFiltre = new BufferedReader(flot);
 				ligne = flotFiltre.readLine();
-				System.out.println("ligne : "+ligne);
+				//System.out.println("ligne : "+ligne);
 				while (ligne != null){
-					filtre = new Scanner(ligne).useDelimiter(",");
+					filtre = new Scanner(ligne);
 					if (filtre.hasNext()) {
 						String mot = filtre.next();
-						System.out.println("mot : "+mot);
+						//System.out.println("mot : "+mot);
 						if (mot.startsWith(beginningOfTheWord) && !alreadyFoundWords.contains(mot)) {  //on a trouvé une correspondance
-							System.out.println("OIN");
+							//System.out.println("OIN");
 							previousWord = mot;
 							alreadyFoundWords.add(previousWord);
-							definition = filtre.next();
-							System.out.println("def : "+definition);
 							return true;
 						}
 					}
 					ligne = flotFiltre.readLine();
-					System.out.println("ligne : "+ligne);
+					//System.out.println("ligne : "+ligne);
 				}
 				flotFiltre.close();
 						
 			} catch (IOException e) {System.out.println(e.getMessage());}
 			i++;
-			System.out.println("i : "+i);
+			//System.out.println("i : "+i);
 			beginningOfTheWord = previousWord.substring(previousWord.length()-i);
-			System.out.println("next tested word : "+beginningOfTheWord);
+			//System.out.println("next tested word : "+beginningOfTheWord);
 		}
 		return false;
 	}
 	
 	public boolean isWordActual(String w){
-		if (!(w.equals(null) || w.equals("") || (w.length() == 0) || (w.matches(".*\\d+.*")))) {
+		if (!w.equals(null) && !w.equals("") && w.length() != 0 && !w.matches(".*\\d+.*") && !joiningWords(w).equals("")) {
 			word = w;
 			return true;
 		}
@@ -82,23 +79,23 @@ public class WordChecking {
 	}
 	
 	public String joiningWords(String oldText){
-		System.out.println("Début j");
-		int limit = Math.min(oldText.length(),previousWord.length());
-		String substringOld = "";
-		String substringPreviousWord = "";
-		System.out.println("oT : "+oldText);
-		System.out.println("pW : "+previousWord);
-		for (int i=0;i<limit-1;i++){
-			substringOld = oldText.substring(oldText.length() - 1 - i, oldText.length());
-			System.out.println("sso : "+substringOld);
-			substringPreviousWord = previousWord.substring(0, i+1);
-			System.out.println("sspw : "+substringPreviousWord);
-			if (substringOld.equals(substringPreviousWord)){
-				System.out.println("res : "+previousWord.substring(i+1));
-				System.out.println("Fin J");
-				return previousWord.substring(i+1);
+			System.out.println("Début j");
+			int limit = Math.min(oldText.length(),previousWord.length());
+			String substringOld = "";
+			String substringPreviousWord = "";
+			System.out.println("oT : "+oldText);
+			System.out.println("pW : "+previousWord);
+			for (int i=0;i<limit;i++){
+				substringPreviousWord = previousWord.substring(previousWord.length() - 1 - i, previousWord.length());
+				System.out.println("sspw : "+substringPreviousWord);
+				substringOld = oldText.substring(0, i+1);
+				System.out.println("sso : "+substringOld);
+				if (substringOld.equals(substringPreviousWord)){
+					System.out.println("res : "+substringOld);
+					System.out.println("Fin J");
+					return substringOld;
+				}
 			}
-		}
 		return "";
 	}
 
@@ -106,9 +103,11 @@ public class WordChecking {
 	public boolean existsInDictionnary() {
 		int i = 1;
 		String wholeWord = previousWord + joiningWords(word);
-		System.out.println("whole : " + wholeWord);
+		String j = joiningWords(word);
+		System.out.println("j : "+j);
+		//System.out.println("whole : " + wholeWord);
 		String wordTested = word;
-		System.out.println("tested : " + wordTested);
+		//System.out.println("tested : " + wordTested);
 		while (!wordTested.equals(wholeWord) || previousWord.equals("")){
 			FileReader flot;
 			BufferedReader flotFiltre;
@@ -119,24 +118,22 @@ public class WordChecking {
 				flot = new FileReader(filename);
 				flotFiltre = new BufferedReader(flot);
 				ligne = flotFiltre.readLine();
-				System.out.println("ligne : "+ligne);
+				//System.out.println("ligne : "+ligne);
 				while (ligne != null){
-					filtre = new Scanner(ligne).useDelimiter(",");
+					filtre = new Scanner(ligne);
 					if (filtre.hasNext()) {
 						String mot = filtre.next();
-						System.out.println("mot : "+mot);
+						//System.out.println("mot : "+mot);
 						if (mot.equals(wordTested)) {  //on a trouvé une correspondance
 							System.out.println("OIN");
 							previousWord = wordTested;
 							alreadyFoundWords.add(previousWord);
-							definition = filtre.next();
-							System.out.println("def : "+definition);
-							System.out.println("words : "+alreadyFoundWords);
+							//System.out.println("words : "+alreadyFoundWords);
 							return true;
 						}
 					}
 					ligne = flotFiltre.readLine();
-					System.out.println("ligne : "+ligne);
+					//System.out.println("ligne : "+ligne);
 				}
 				flotFiltre.close();
 						
@@ -146,9 +143,9 @@ public class WordChecking {
 			}
 			i++;
 			if (i > previousWord.length()){
-				System.out.println("i : "+i);
+				//System.out.println("i : "+i);
 				wordTested = previousWord.substring(previousWord.length()-i) + word;
-				System.out.println("next tested word : "+wordTested);
+				//System.out.println("next tested word : "+wordTested);
 			}
 			else {
 				return false;
@@ -173,7 +170,7 @@ public class WordChecking {
 				ligne = flotFiltre.readLine();
 				i++;
 			}
-			filtre = new Scanner(ligne).useDelimiter(",");
+			filtre = new Scanner(ligne);
 			previousWord = filtre.next();
 			alreadyFoundWords.add(previousWord);
 			flotFiltre.close();
@@ -196,9 +193,5 @@ public class WordChecking {
 
 	public String getPreviousWord() {
 		return previousWord;
-	}
-
-	public String getDefinition() {
-		return definition;
 	}
 }
