@@ -14,6 +14,7 @@ import java.util.Observer;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,6 +29,7 @@ import listener.AnswerZoneListener;
 import listener.BackListener;
 import listener.ValidateListener;
 import model.Button;
+import model.Play;
 import model.ValidateButton;
 
 public class Screen extends JPanel implements Observer, ActionListener {
@@ -43,11 +45,12 @@ public class Screen extends JPanel implements Observer, ActionListener {
 	private Dictionnary dic;
 	private int numberOfPlayers;
 	private int turn;
+	private Button reset;
 
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("static-access")
-	public Screen(int nbPlayers) {
+	public Screen(int nbPlayers) { 
 		
 		numberOfPlayers = nbPlayers;
 		if (numberOfPlayers == 2){
@@ -153,6 +156,12 @@ public class Screen extends JPanel implements Observer, ActionListener {
 		validate.getButton().addActionListener(new ValidateListener(validate));
 		gbc.gridx += gbc.gridwidth;
 		add(validate.getButton(),gbc);
+		
+		reset = new Button("Reset");
+		reset.setText("Reset");
+		reset.addActionListener(this);
+		gbc.gridx += gbc.gridwidth;
+		add(reset,gbc);
 	
 		setPreferredSize(new Dimension(800,700));
 		setVisible(true);
@@ -208,6 +217,7 @@ public class Screen extends JPanel implements Observer, ActionListener {
 				numberOfLives[0]--;
 				if (numberOfLives[0] == 0){
 					definitions.append("You've lost of your lives !\n");
+					answerZone.setEditable(false);
 				}
 			}
 		}
@@ -245,7 +255,7 @@ public class Screen extends JPanel implements Observer, ActionListener {
 				definitions.append("You proposition is not valid!\n");
 				correctAnswer = false;
 				numberOfLives[turn - 1]--;
-				definitions.append("Remaining lives :"+numberOfLives[turn - 1]+"\n");
+				definitions.append("Remaining lives : "+numberOfLives[turn - 1]+"\n");
 			}
 		}
 		if (correctAnswer && numberOfPlayers == 2){
@@ -259,6 +269,7 @@ public class Screen extends JPanel implements Observer, ActionListener {
 		}
 		else if (numberOfLives[turn - 1] <=0 ){
 			definitions.append("Player "+turn+" you've lost of of your lives!\n");
+			answerZone.setEditable(false);
 		}
 	}
 	
@@ -302,13 +313,41 @@ public class Screen extends JPanel implements Observer, ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() instanceof JButton){
+		if (e.getSource() instanceof JButton && !((JButton) e.getSource()).getText().equals("Check") && !((JButton) e.getSource()).getText().equals("Reset") && !((JButton) e.getSource()).getText().equals("Back")){
 			JButton c = (JButton) e.getSource();
 			dic.setHeader(c.getText());
 			try {
 				definitions.append(c.getText()+" : "+dic.extractDefinition()+"\n");
 			} catch (IOException er) {
 				er.printStackTrace();
+			}
+		}
+		else {
+			answerZone.setEditable(true);
+			answerZone.setText("");
+			if (numberOfPlayers == 2){
+				numberOfLives = new int[numberOfPlayers];
+				numberOfLives[1] = 3;
+				Random r = new Random();
+				int q = r.nextInt(1);
+				turn = 1 + q;
+			}
+			else {
+				numberOfLives = new int[numberOfPlayers];
+			}
+			numberOfLives[0] = 3;
+			wordChecking = new WordChecking();
+			wordChecking.randomStart();
+			word1.setText("");
+			word2.setText("");
+			word3.setText("");
+			word4.setText(wordChecking.getPreviousWord());
+			
+			if (numberOfPlayers == 2){
+				definitions.append("Player "+turn+", you start!\n");
+			}
+			else {
+				definitions.append("The computer played "+wordChecking.getPreviousWord()+", it's your turn now!\n");
 			}
 		}
 	}
