@@ -11,11 +11,12 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Random;
 
-import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import calc.Dictionnary;
@@ -24,7 +25,7 @@ import listener.AnswerZoneListener;
 import listener.ValidateListener;
 import model.ValidateButton;
 
-public class Screen extends JFrame implements Observer, ActionListener {
+public class Screen extends JPanel implements Observer, ActionListener {
 
 	private String[] words = new String[4];
 	private JButton word1, word2, word3, word4;
@@ -33,20 +34,31 @@ public class Screen extends JFrame implements Observer, ActionListener {
 	private ValidateButton validate;
 	private WordChecking wordChecking;
 	private boolean correctAnswer;
-	private int numberOfLives;
+	private int[] numberOfLives;
 	private Dictionnary dic;
+	private int numberOfPlayers;
+	private int turn;
+	private int score;
+	private JLabel scoreDisplay;
+	private JLabel lives;
 
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("static-access")
-	public Screen(){
-		numberOfLives = 3;
+	public Screen(int nbPlayers) {
+		numberOfPlayers = nbPlayers;
+		numberOfLives = new int[numberOfPlayers];
+		
+		if (numberOfPlayers == 2){
+			numberOfLives[1] = 3;
+			Random r = new Random();
+			int q = r.nextInt(1);
+			turn = 1 + q;
+		}
+		numberOfLives[0] = 3;
 		wordChecking = new WordChecking();
 		wordChecking.randomStart();
 		dic = new Dictionnary();
-	
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("Banana Game");
 		
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -108,6 +120,7 @@ public class Screen extends JFrame implements Observer, ActionListener {
 		
 		definitions = new JTextArea(15,25);
 		definitions.setEditable(false);
+		definitions.append("Player "+turn+", you start!\n");
 		gbc.insets = new Insets(0, 0, 0, 5);
 		gbc.gridy += gbc.gridheight;
 		gbc.gridx = 0;
@@ -130,15 +143,32 @@ public class Screen extends JFrame implements Observer, ActionListener {
 		validate.getButton().addActionListener(new ValidateListener(validate));
 		gbc.gridx += gbc.gridwidth;
 		add(validate.getButton(),gbc);
+		
+		lives = new JLabel();
+		lives.setText("Player 1 lives : "+numberOfLives[0]);
+		if (numberOfPlayers == 2){
+			lives.setText(lives.getText()+" -- Player 2 lives : "+numberOfLives[1]);
+		}
+		gbc.gridx -= gbc.gridwidth;
+		gbc.gridy += gbc.gridheight;
+		add(lives,gbc);
+		
+		if (numberOfPlayers == 1){
+			score = 0;
+			scoreDisplay = new JLabel();
+			scoreDisplay.setText("Score : "+score);
+			gbc.gridx -= gbc.gridwidth;
+			gbc.gridy += gbc.gridheight;
+			add(lives,gbc);
+		}
 	
 		setPreferredSize(new Dimension(800,700));
 		setVisible(true);
-		pack();
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if (o instanceof ValidateButton){
+		if (o instanceof ValidateButton && numberOfPlayers == 1){
 			String text = answerZone.getText();
 			if (wordChecking.isWordActual(text)){
 				if (!wordChecking.isAlreadyFound()){
@@ -146,9 +176,8 @@ public class Screen extends JFrame implements Observer, ActionListener {
 						changeWordsDisplay(wordChecking.getPreviousWord(), Color.BLUE);
 						dic.setHeader(wordChecking.getPreviousWord());
 						try {
-							definitions.append(wordChecking.getPreviousWord()+" : "+dic.extractDefinition()+"\n");
+							definitions.append("You played "+wordChecking.getPreviousWord()+" : "+dic.extractDefinition()+"\n");
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						answerZone.setValue("");
@@ -173,9 +202,8 @@ public class Screen extends JFrame implements Observer, ActionListener {
 					changeWordsDisplay(wordChecking.getPreviousWord(),Color.RED);
 					dic.setHeader(wordChecking.getPreviousWord());
 					try {
-						definitions.append(wordChecking.getPreviousWord()+" : "+dic.extractDefinition()+"\n");
+						definitions.append("The computer played : "+wordChecking.getPreviousWord()+" : "+dic.extractDefinition()+"\n");
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -184,11 +212,57 @@ public class Screen extends JFrame implements Observer, ActionListener {
 				}
 			}
 			else {
-				numberOfLives--;
-				if (numberOfLives == 0){
+				numberOfLives[0]--;
+				if (numberOfLives[0] == 0){
 					definitions.append("You've lost of your lives !\n");
 				}
 			}
+		}
+		if (o instanceof ValidateButton && numberOfPlayers == 2){
+			String text = answerZone.getText();
+			if (wordChecking.isWordActual(text)){
+				if (!wordChecking.isAlreadyFound()){
+					if (wordChecking.existsInDictionnary()){
+						changeWordsDisplay(wordChecking.getPreviousWord(), Color.BLUE);
+						dic.setHeader(wordChecking.getPreviousWord());
+						try {
+							definitions.append("You played "+wordChecking.getPreviousWord()+" : "+dic.extractDefinition()+"\n");
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						answerZone.setValue("");
+						correctAnswer = true;
+					}
+					else {
+						definitions.append("The word "+text+" is unknown!\n");
+						correctAnswer = false;
+						numberOfLives[turn - 1]--;
+						
+					}
+				}
+				else {
+					definitions.append("The word "+text+" has already been found!\n");
+					correctAnswer = false;
+					numberOfLives[turn - 1]--;
+				}
+			}
+			else {
+				definitions.append("You proposition is not valid!\n");
+				correctAnswer = false;
+				numberOfLives[turn - 1]--;
+			}
+		}
+		if (correctAnswer){
+			if (turn==1){
+				turn = 2;
+			}
+			else {
+				turn = 1;
+			}
+			definitions.append("It's your turn player "+turn+"\n");
+		}
+		else if (numberOfLives[turn - 1] <=0 ){
+			definitions.append("Player "+turn+" you've lost of of your lives!\n");
 		}
 	}
 	
@@ -219,7 +293,6 @@ public class Screen extends JFrame implements Observer, ActionListener {
 			try {
 				definitions.append(c.getText()+" : "+dic.extractDefinition()+"\n");
 			} catch (IOException er) {
-				// TODO Auto-generated catch block
 				er.printStackTrace();
 			}
 		}
