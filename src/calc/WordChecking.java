@@ -28,7 +28,7 @@ public class WordChecking {
 		int i = 1;
 		String wholeWord = previousWord; //on ne va pas chercher au delà
 		//System.out.println("Le joueur a joué ce mot : "+wholeWord);
-		String beginningOfTheWord = previousWord.substring(previousWord.length()-i);
+		String beginningOfTheWord = previousWord.substring(i,previousWord.length()-1);
 		//System.out.println("Je vais chercher un mot qui commence par : "+beginningOfTheWord);
 		
 		while (!beginningOfTheWord.equals(wholeWord)){
@@ -62,7 +62,7 @@ public class WordChecking {
 			} catch (IOException e) {System.out.println(e.getMessage());}
 			i++;
 			//System.out.println("i : "+i);
-			beginningOfTheWord = previousWord.substring(previousWord.length()-i);
+			beginningOfTheWord = previousWord.substring(i,previousWord.length()-1);
 			//System.out.println("next tested word : "+beginningOfTheWord);
 		}
 		return false;
